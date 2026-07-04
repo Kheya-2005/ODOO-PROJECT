@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ODOO - Sign Up</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { 
+            background: linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); }
+        .preview-img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-lg w-full">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-white rounded-3xl shadow-xl text-5xl mb-4">🧑‍💼</div>
+            <h1 class="text-5xl font-bold text-white tracking-tight">ODOO</h1>
+            <p class="text-white/90 text-lg">Create your account</p>
+        </div>
+
+        <div class="glass rounded-3xl shadow-2xl p-10">
+            <h2 class="text-3xl font-semibold text-center text-gray-800 mb-8">Sign Up</h2>
+
+            <form onsubmit="handleSignUp(event)" class="space-y-6">
+                <!-- Profile Picture -->
+                <div class="flex flex-col items-center">
+                    <label class="cursor-pointer">
+                        <input type="file" id="profilePic" accept="image/*" class="hidden" onchange="previewImage(event)">
+                        <div id="previewContainer" class="w-24 h-24 border-4 border-dashed border-purple-300 rounded-full flex items-center justify-center overflow-hidden">
+                            <span class="text-4xl text-gray-400">📸</span>
+                        </div>
+                    </label>
+                    <p class="text-xs text-gray-500 mt-2">Upload Profile Picture (Optional)</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Company Name</label>
+                    <input type="text" id="company" placeholder="Enter Company Name" 
+                           class="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:outline-none focus:border-purple-500" required>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                        <input type="text" id="name" placeholder="Enter your full name" 
+                               onkeyup="generateEmployeeId()"
+                               class="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:outline-none focus:border-purple-500" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+                        <select id="gender" class="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:outline-none focus:border-purple-500" required>
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Employee ID</label>
+                    <input type="text" id="empId" value="Will be auto-generated" readonly
+                           class="w-full px-5 py-4 rounded-2xl border border-gray-200 bg-gray-100 text-gray-600">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input type="email" id="email" placeholder="your.email@company.com" 
+                           class="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:outline-none focus:border-purple-500" required>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                    <input type="tel" id="phone" placeholder="Enter phone number" 
+                           class="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:outline-none focus:border-purple-500" required>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                        <input type="text" id="password" placeholder="Create password" 
+                               class="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:outline-none focus:border-purple-500" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+                        <input type="text" id="confirmPassword" placeholder="Confirm password" 
+                               class="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:outline-none focus:border-purple-500" required>
+                    </div>
+                </div>
+
+                <button type="button" onclick="generatePassword()" 
+                        class="flex items-center gap-2 text-purple-600 hover:text-purple-700 text-sm font-medium">
+                    🔑 Generate Strong Password
+                </button>
+
+                <button type="submit"
+                        class="w-full py-4 bg-gradient-to-r from-purple-600 to-violet-600 text-white font-semibold rounded-2xl hover:from-purple-700 hover:to-violet-700 transition-all text-lg">
+                    SIGN UP
+                </button>
+            </form>
+
+            <div class="text-center mt-8">
+                <p class="text-gray-600">
+                    Already have an account? 
+                    <a href="login.html" class="text-purple-600 hover:underline font-medium">Sign In</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedImage = null;
+
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                selectedImage = file;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const container = document.getElementById('previewContainer');
+                    container.innerHTML = `<img src="${e.target.result}" class="preview-img">`;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function generateEmployeeId() {
+            const name = document.getElementById('name').value.trim();
+            const empIdField = document.getElementById('empId');
+            if (name.length < 3) {
+                empIdField.value = "Will be auto-generated";
+                return;
+            }
+            const initials = name.split(' ').slice(0, 2).map(word => word[0]).join('').toUpperCase();
+            const year = new Date().getFullYear();
+            const serial = String(Math.floor(Math.random() * 999) + 1).padStart(3, '0');
+            empIdField.value = `${initials}${year}${serial}`;
+        }
+
+        function generatePassword() {
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&*";
+            let password = "";
+            for (let i = 0; i < 12; i++) {
+                password += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            document.getElementById('password').value = password;
+            document.getElementById('confirmPassword').value = password;
+            alert(`✅ Strong Password Generated:\n\n${password}`);
+        }
+
+        function handleSignUp(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value.trim();
+            const empId = document.getElementById('empId').value;
+            const password = document.getElementById('password').value;
+            const confirm = document.getElementById('confirmPassword').value;
+
+            if (!name) return alert("Please enter your full name");
+            if (password !== confirm) return alert("❌ Passwords do not match!");
+            if (password.length < 6) return alert("❌ Password must be at least 6 characters.");
+
+            alert(`✅ Account Created Successfully!\n\nEmployee ID: ${empId}\n\nProfile picture uploaded successfully!`);
+            window.location.href = "login.html";
+        }
+    </script>
+</body>
+                          </html>
