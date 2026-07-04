@@ -1,0 +1,67 @@
+const API_BASE = 'http://localhost:4000/api/attendance';
+
+// Hardcoded for demo — in a real app this comes from the logged-in session
+const EMPLOYEE_ID = 1;
+
+let currentMonth = new Date('2025-10-01');
+const monthLabel = document.getElementById('monthLabel');
+const tbody = document.getElementById('attendanceBody');
+
+function formatMonthForApi(d) {
+  return d.toISOString().slice(0, 7); // YYYY-MM
+}
+
+function formatMonthForLabel(d) {
+  return d.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+}
+
+async function loadAttendance() {
+  tbody.innerHTML = '<tr class="loading-row"><td colspan="6">Loading...</td></tr>';
+  const monthStr = formatMonthForApi(currentMonth);
+  monthLabel.textContent = formatMonthForLabel(currentMonth);
+
+  try {
+    const res = await fetch(`${API_BASE}/employee/${EMPLOYEE_ID}?month=${monthStr}`);
+    const data = await res.json();
+    renderRows(data.days || []);
+    renderSummary(data.summary || {});
+  } catch (err) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="6">Could not load attendance. Is the backend running?</td></tr>';
+    console.error(err);
+  }
+}
+
+function renderRows(records) {
+  if (!records.length) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="6">No records for this month</td></tr>';
+    return;
+  }
+  tbody.innerHTML = records.map(r => `
+    <tr>
+      <td>${new Date(r.date).toLocaleDateString('en-GB')}</td>
+      <td>${r.checkIn || '-'}</td>
+      <td>${r.checkOut || '-'}</td>
+      <td>${r.workHours ? r.workHours + 'h' : '-'}</td>
+      <td>${r.extraHours ? r.extraHours + 'h' : '-'}</td>
+      <td><span class="status-badge status-${r.status}">${r.status}</span></td>
+    </tr>
+  `).join('');
+}
+
+function renderSummary(summary) {
+  document.getElementById('daysPresent').textContent = summary.daysPresent ?? '-';
+  document.getElementById('leavesCount').textContent = summary.leavesCount ?? '-';
+  document.getElementById('totalWorkingDays').textContent = summary.totalWorkingDays ?? '-';
+}
+
+document.getElementById('prevMonth').addEventListener('click', () => {
+  currentMonth.setMonth(currentMonth.getMonth() - 1);
+  loadAttendance();
+});
+
+document.getElementById('nextMonth').addEventListener('click', () => {
+  currentMonth.setMonth(currentMonth.getMonth() + 1);
+  loadAttendance();
+});
+
+loadAttendance();

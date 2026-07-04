@@ -1,0 +1,68 @@
+const API_BASE = 'http://localhost:4000/api/attendance';
+
+let currentDate = new Date('2025-10-22'); // defaults to the sample seed date
+const dateLabel = document.getElementById('dateLabel');
+const tbody = document.getElementById('attendanceBody');
+const searchInput = document.getElementById('searchInput');
+
+function formatDateForApi(d) {
+  return d.toISOString().slice(0, 10); // YYYY-MM-DD
+}
+
+function formatDateForLabel(d) {
+  return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+}
+
+async function loadAttendance() {
+  tbody.innerHTML = '<tr class="loading-row"><td colspan="6">Loading...</td></tr>';
+  const dateStr = formatDateForApi(currentDate);
+  dateLabel.textContent = formatDateForLabel(currentDate);
+
+  const params = new URLSearchParams({ date: dateStr });
+  const search = searchInput.value.trim();
+  if (search) params.append('search', search);
+
+  try {
+    const res = await fetch(`${API_BASE}?${params.toString()}`);
+    const data = await res.json();
+    renderRows(data.attendance || []);
+  } catch (err) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="6">Could not load attendance. Is the backend running?</td></tr>';
+    console.error(err);
+  }
+}
+
+function renderRows(records) {
+  if (!records.length) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="6">No employees found</td></tr>';
+    return;
+  }
+  tbody.innerHTML = records.map(r => `
+    <tr>
+      <td>${r.name}</td>
+      <td>${r.checkIn || '-'}</td>
+      <td>${r.checkOut || '-'}</td>
+      <td>${r.workHours ? r.workHours + 'h' : '-'}</td>
+      <td>${r.extraHours ? r.extraHours + 'h' : '-'}</td>
+      <td><span class="status-badge status-${r.status}">${r.status}</span></td>
+    </tr>
+  `).join('');
+}
+
+document.getElementById('prevDay').addEventListener('click', () => {
+  currentDate.setDate(currentDate.getDate() - 1);
+  loadAttendance();
+});
+
+document.getElementById('nextDay').addEventListener('click', () => {
+  currentDate.setDate(currentDate.getDate() + 1);
+  loadAttendance();
+});
+
+let searchTimeout;
+searchInput.addEventListener('input', () => {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(loadAttendance, 300); // debounce
+});
+
+loadAttendance();
