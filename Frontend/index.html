@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ODOO - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #f8fafc; }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="w-72 bg-white shadow-xl">
+            <div class="p-6 border-b">
+                <div class="flex items-center gap-4">
+                    <div class="text-4xl">👨‍💼</div>
+                    <div>
+                        <h1 class="text-3xl font-bold text-purple-600">ODOO</h1>
+                        <p class="text-sm text-gray-500">Employee Portal</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="p-4 space-y-2">
+                <a href="index.html" class="flex items-center gap-4 px-6 py-4 bg-purple-50 text-purple-700 rounded-2xl font-medium">
+                    🏠 Dashboard
+                </a>
+                <a href="attendance.html" class="flex items-center gap-4 px-6 py-4 hover:bg-gray-100 rounded-2xl">📅 Attendance</a>
+                <a href="leave.html" class="flex items-center gap-4 px-6 py-4 hover:bg-gray-100 rounded-2xl">🌴 Leave</a>
+                <a href="profile.html" class="flex items-center gap-4 px-6 py-4 hover:bg-gray-100 rounded-2xl">👤 My Profile</a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 p-8 overflow-auto">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-4xl font-bold text-gray-800" id="welcome-name">Welcome Back</h1>
+                    <p class="text-gray-500">Employee Dashboard</p>
+                </div>
+                <button onclick="logout()" 
+                        class="px-6 py-2 text-red-500 hover:bg-red-50 rounded-2xl font-medium">Logout</button>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-3xl shadow">
+                    <div class="text-6xl mb-4">📅</div>
+                    <h3 class="text-3xl font-bold text-emerald-600" id="days-present">18</h3>
+                    <p class="text-gray-500">Days Present This Month</p>
+                </div>
+                <div class="bg-white p-6 rounded-3xl shadow">
+                    <div class="text-6xl mb-4">🌴</div>
+                    <h3 class="text-3xl font-bold text-amber-600" id="leave-balance">12</h3>
+                    <p class="text-gray-500">Leave Balance</p>
+                </div>
+                <div class="bg-white p-6 rounded-3xl shadow">
+                    <div class="text-6xl mb-4">💰</div>
+                    <h3 class="text-3xl font-bold text-purple-600">₹45,000</h3>
+                    <p class="text-gray-500">This Month Salary</p>
+                </div>
+            </div>
+
+            <div class="mt-10 bg-white rounded-3xl p-8">
+                <h2 class="text-2xl font-semibold mb-4">Recent Activity</h2>
+                <p class="text-gray-500">Your recent attendance, leaves, and updates will appear here.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function loadUserData() {
+            const userName = localStorage.getItem('userName') || "Employee";
+            document.getElementById('welcome-name').textContent = `Welcome Back, ${userName}`;
+
+            // Dynamic mock data
+            const days = Math.floor(Math.random() * 8) + 15;   // 15 to 22 days
+            const leave = Math.floor(Math.random() * 6) + 8;   // 8 to 13 days
+
+            document.getElementById('days-present').textContent = days;
+            document.getElementById('leave-balance').textContent = leave;
+        }
+
+        function logout() {
+            if (confirm("Are you sure you want to logout?")) {
+                localStorage.clear();
+                window.location.href = "login.html";
+            }
+        }
+
+        window.onload = loadUserData;
+    </script>
+</body>
+                      </html>
