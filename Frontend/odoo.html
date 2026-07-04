@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ODOO - My Profile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <style>
+    .tab-active {
+      border-bottom: 3px solid #3b82f6;
+      color: #1e40af;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body class="h-full bg-gray-50">
+
+  <div class="flex h-screen">
+
+    <!-- Sidebar -->
+    <div class="w-72 bg-white border-r border-gray-200 flex flex-col">
+      <div class="p-6 border-b">
+        <h1 class="text-2xl font-bold text-blue-600">ODOO</h1>
+      </div>
+
+      <!-- Profile Card -->
+      <div class="p-6">
+        <div class="bg-blue-50 rounded-2xl p-4 flex items-center gap-4">
+          <div class="w-14 h-14 bg-pink-200 rounded-full flex items-center justify-center text-3xl">👤</div>
+          <div>
+            <p class="font-semibold text-lg">My Name</p>
+            <p class="text-sm text-gray-500">Admin</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="flex-1 px-4 space-y-1">
+        <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-xl bg-blue-50 text-blue-600">
+          <i class="fa-solid fa-user"></i><span>Profile</span>
+        </a>
+        <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-xl">
+          <i class="fa-solid fa-users"></i><span>Employees</span>
+        </a>
+        <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-xl">
+          <i class="fa-solid fa-clock"></i><span>Attendance</span>
+        </a>
+        <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-xl">
+          <i class="fa-solid fa-calendar"></i><span>Time Off</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 overflow-auto">
+      <div class="p-8">
+        <h1 class="text-3xl font-bold mb-8">My Profile</h1>
+
+        <!-- Tabs -->
+        <div class="border-b mb-8">
+          <div class="flex gap-10 text-lg">
+            <button onclick="switchTab(0)" id="tab0" class="tab-active pb-4">Resume</button>
+            <button onclick="switchTab(1)" id="tab1" class="pb-4 text-gray-600 hover:text-gray-900">Private Info</button>
+            <button onclick="switchTab(2)" id="tab2" class="pb-4 text-gray-600 hover:text-gray-900">Salary Info</button>
+          </div>
+        </div>
+
+        <!-- Tab Contents -->
+        <div id="resume-tab" class="tab-content">
+          <div class="max-w-3xl space-y-10">
+
+            <!-- About -->
+            <div>
+              <h3 class="text-lg font-semibold mb-3 flex items-center gap-2">About <i class="fa-solid fa-pencil text-blue-500"></i></h3>
+              <textarea id="about-text" oninput="checkForChanges()" 
+                        class="w-full h-40 p-5 rounded-2xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none resize-y"
+                        placeholder="Write about yourself..."></textarea>
+            </div>
+
+            <!-- Skills -->
+            <div>
+              <h3 class="text-lg font-semibold mb-3">Skills</h3>
+              <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <div id="skills-container" class="flex flex-wrap gap-2 mb-4"></div>
+                <div class="flex gap-3">
+                  <input type="text" id="new-skill" class="flex-1 px-5 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-blue-500" placeholder="Add new skill...">
+                  <button onclick="addSkill()" class="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition flex items-center gap-2">
+                    <i class="fa-solid fa-plus"></i> Add
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Certification -->
+            <div>
+              <h3 class="text-lg font-semibold mb-3">Certification</h3>
+              <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <div id="cert-container" class="space-y-2 mb-4"></div>
+                <div class="flex gap-3">
+                  <input type="text" id="new-cert" class="flex-1 px-5 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-blue-500" placeholder="Add certification (e.g. AWS Certified)...">
+                  <button onclick="addCertification()" class="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition flex items-center gap-2">
+                    <i class="fa-solid fa-plus"></i> Add
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Save Button -->
+            <div class="flex justify-end pt-6">
+              <button id="save-btn" onclick="saveProfile()" class="hidden bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-2xl shadow-lg flex items-center gap-3 text-lg">
+                <i class="fa-solid fa-floppy-disk"></i> Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Private Info Tab -->
+        <div id="private-tab" class="tab-content hidden">
+          <div class="max-w-2xl bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+            <h3 class="text-xl font-semibold mb-6">Private Information</h3>
+            <div class="grid grid-cols-2 gap-6">
+              <div>
+                <label class="block text-sm text-gray-500 mb-1">Date of Birth</label>
+                <input type="date" id="dob" class="w-full p-3 border border-gray-300 rounded-xl" oninput="checkForChanges()">
+              </div>
+              <div>
+                <label class="block text-sm text-gray-500 mb-1">Gender</label>
+                <select id="gender" class="w-full p-3 border border-gray-300 rounded-xl" onchange="checkForChanges()">
+                  <option value="">Select</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm text-gray-500 mb-1">Nationality</label>
+                <input type="text" id="nationality" placeholder="Indian" class="w-full p-3 border border-gray-300 rounded-xl" oninput="checkForChanges()">
+              </div>
+              <div>
+                <label class="block text-sm text-gray-500 mb-1">Marital Status</label>
+                <select id="marital" class="w-full p-3 border border-gray-300 rounded-xl" onchange="checkForChanges()">
+                  <option value="">Select</option>
+                  <option value="Single">Single</option>
+                  <option value="Married">Married</option>
+                  <option value="Divorced">Divorced</option>
+                </select>
+              </div>
+              <div class="col-span-2">
+                <label class="block text-sm text-gray-500 mb-1">Address</label>
+                <textarea id="address" rows="3" placeholder="Enter full address" class="w-full p-4 border border-gray-300 rounded-2xl" oninput="checkForChanges()"></textarea>
+              </div>
+              <div>
+                <label class="block text-sm text-gray-500 mb-1">Date of Joining</label>
+                <input type="date" id="doj" class="w-full p-3 border border-gray-300 rounded-xl" oninput="checkForChanges()">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Salary Info Tab -->
+        <div id="salary-tab" class="tab-content hidden">
+          <div class="max-w-2xl bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+            <div class="flex justify-between items-center mb-8">
+              <h2 class="text-2xl font-semibold">Salary Info</h2>
+              <span class="bg-green-100 text-green-700 px-4 py-1 rounded-full text-sm font-medium">Admin Only</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-8 mb-10">
+              <div>
+                <p class="text-gray-500">Month Wage</p>
+                <p class="text-4xl font-bold">₹50,000</p>
+                <p class="text-sm text-gray-500">/ Month</p>
+              </div>
+              <div>
+                <p class="text-gray-500">Yearly Wage</p>
+                <p class="text-4xl font-bold">₹6,00,000</p>
+                <p class="text-sm text-gray-500">/ Yearly</p>
+              </div>
+            </div>
+
+            <h3 class="font-semibold text-lg mb-5">Salary Components</h3>
+            <div class="space-y-4 mb-10">
+              <div class="flex justify-between"><span>Basic Salary</span><span>₹25,000 <span class="text-gray-400">(50%)</span></span></div>
+              <div class="flex justify-between"><span>House Rent Allowance</span><span>₹12,500 <span class="text-gray-400">(25%)</span></span></div>
+              <div class="flex justify-between"><span>Performance Bonus</span><span>₹2,082.50 <span class="text-gray-400">(8.33%)</span></span></div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-10">
+              <div>
+                <h4 class="font-semibold mb-3">Provident Fund (PF)</h4>
+                <p>Employee: ₹3,000 (12%)</p>
+                <p>Employer: ₹3,000 (12%)</p>
+              </div>
+              <div>
+                <h4 class="font-semibold mb-3">Tax Deductions</h4>
+                <p>Professional Tax: ₹200 / month</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let hasChanges = false;
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.getElementById('resume-tab').classList.toggle('hidden', tab !== 0);
+      document.getElementById('private-tab').classList.toggle('hidden', tab !== 1);
+      document.getElementById('salary-tab').classList.toggle('hidden', tab !== 2);
+
+      document.querySelectorAll('button[id^="tab"]').forEach((btn, i) => {
+        btn.classList.toggle('tab-active', i === tab);
+      });
+    }
+
+    function showSaveButton() {
+      if (!hasChanges) {
+        hasChanges = true;
+        document.getElementById('save-btn').classList.remove('hidden');
+      }
+    }
+
+    function checkForChanges() {
+      showSaveButton();
+    }
+
+    function addSkill() {
+      const input = document.getElementById('new-skill');
+      const val = input.value.trim();
+      if (val) {
+        document.getElementById('skills-container').innerHTML += `
+          <span class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 px-4 py-1.5 rounded-full text-sm">
+            ${val} <i onclick="this.parentElement.remove()" class="fa-solid fa-xmark cursor-pointer"></i>
+          </span>`;
+        input.value = '';
+        showSaveButton();
+      }
+    }
+
+    function addCertification() {
+      const input = document.getElementById('new-cert');
+      const val = input.value.trim();
+      if (val) {
+        document.getElementById('cert-container').innerHTML += `
+          <div class="flex justify-between bg-gray-50 px-4 py-3 rounded-xl">
+            <span>${val}</span>
+            <i onclick="this.parentElement.remove()" class="fa-solid fa-xmark cursor-pointer text-gray-400 hover:text-red-600"></i>
+          </div>`;
+        input.value = '';
+        showSaveButton();
+      }
+    }
+
+    function saveProfile() {
+      alert("✅ Profile changes saved successfully!");
+      // Reset button after save
+      setTimeout(() => {
+        document.getElementById('save-btn').classList.add('hidden');
+        hasChanges = false;
+      }, 1500);
+    }
+
+    // Keyboard support
+    document.getElementById('new-skill').addEventListener('keypress', e => { if(e.key === 'Enter') addSkill(); });
+    document.getElementById('new-cert').addEventListener('keypress', e => { if(e.key === 'Enter') addCertification(); });
+  </script>
+</body>
+</html>
